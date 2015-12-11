@@ -1,3 +1,29 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: This program detects a gunshot like sound and does a TCP 
+ *              communication of infromation to a server. It uses dummy
+ *              GPS position coordnates and appends a timestamp
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+ * 
+ *
+ * This program uses the PortAudio Portable Audio Library.
+ * For more information see: http://www.portaudio.com
+ * Copyright (c) 1999-2000 Ross Bencina and Phil Burk
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files
+ * (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "portaudio.h"
@@ -20,7 +46,7 @@ typedef struct
 }
 paTestData;
 
-
+// PortAudio's callback function that will be called when audio is availabile
 static int recordCallback( const void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
                            const PaStreamCallbackTimeInfo* timeInfo,
@@ -71,6 +97,7 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
     return finished;
 }
 
+// Append information like GPS co-odinates, timestamp and send via TCP
 static void processAndSend(){
 
     gps_info gi;

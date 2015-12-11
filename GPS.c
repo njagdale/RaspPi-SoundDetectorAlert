@@ -1,3 +1,12 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: This program provides dummy GPS co-odrindates generated ramdomly 
+ *              along with the current system date and time. Information is packed 
+ *              in a struct for the client to further process
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+ */ 
+
 #include "GPS.h"
 
 static int GetRandomLatitide(){

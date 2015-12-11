@@ -1,3 +1,10 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: This program implements a test harness for GPS.h/c 
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+ */ 
+
 #include "GPS.h"
 #include <stdio.h>
 

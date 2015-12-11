@@ -1,7 +1,16 @@
-#include<stdio.h> 
-#include<string.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
+/*
+ * Author:      Nikhil Jagdale
+ * Description: This program provides APIs for TCP communication 
+ *              for sending packets to a server
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+ */ 
+
+#include <stdio.h> 
+#include <string.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include "client.h"
 
 int sock;
 struct sockaddr_in server;

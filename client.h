@@ -1,3 +1,10 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: APIs for TCP communication to server. 
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+*/
+
 #ifdef __CLIENT_H__
 #define __CLIENT_H__
 

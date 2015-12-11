@@ -1,6 +1,12 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: itoa utility function 
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+*/
+
 #include "util.h"
 
-/* A utility function to reverse a string  */
 static void reverse(char str[], int length)
 {
     int start = 0;

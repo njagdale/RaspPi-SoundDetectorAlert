@@ -1,3 +1,10 @@
+/*
+ * Author:      Nikhil Jagdale
+ * Description: API for getting dummy GPS Coordinates 
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+*/
+
 #ifndef __GPS_H__
 #define __GPS_H__
 
