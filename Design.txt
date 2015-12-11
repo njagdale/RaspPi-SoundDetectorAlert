@@ -1,0 +1,84 @@
+/*
+ * Author:      Nikhil Jagdale (njagdale@gmail.com)
+ * Description: Design document for the Gun Shot Detection System 
+ * 
+ * Copyright (c) 2015 Nikhil Jagdale
+*/
+--------------------------------------------------------------------------------
+This a brief design description of the Gun Shot Detection System
+---------------------------------------------------------------------------------
+Hardware:   Raspberry Pi2, USB Microphone, WiFi Dongle
+Software:   SoundDetectorAlert suit of software modules comprising of
+            Impulse Detection, GPS Information, TCP/IP communication, PortAudio.
+
+
+Description: 
+---------------------
+The central idea of this project is to detect a gunshot sound and wirelessly
+communicate (in real-time) the occurence of the gunshot along with the information
+such as GPS Coordinates and timestamp to a server sitting somewhere.
+
+Hardware Design Choice:
+---------------------------
+1. Since the desire is to a have a portable wireless unit, I chose to use a Raspberry Pi2
+with 1GB RAM running ARMv7 dual core system with ALSA sound support running Raspbian OS
+
+2. For wireless connectivity, 802.11n usb based WiFI dongle is connected to the Pi
+
+3. For micrphone, USB based (since Pi doesnt not support unpowered mic) micrphone is connected
+
+
+Software Description:
+
+Impulse Detection:
+---------------------
+
+This is the heart of the project - detecting a gun-shot sound in real time. For this an open-source
+library called PortAudio is used that is a collection of modules supporting ALSA based sound cards for
+capturing sound. PortAudio library provides the facility of having a callback function that is called
+whenever a stream is opened and sound is available on the specified input device (mic). The data is captured
+in a buffer that can be used for further processsing as is the case in this project. The "impulse.c" file
+implements the callback function and associated processing (TCP/IP and GPS usage) on the captured sound.
+For more info on how PortAudio works, please see http://www.portaudio.com/.
+
+Wireless Ethernet Communication:
+---------------------------------
+
+TCP/IP socket based communication is a well known method of communucating over the internet. C libraries
+provide an easy to use set of APIs that can be used to establish a client server connection and send packets.
+In this project the Raspberry Pi is the client that is sending the information accross to the server (laptop)
+over a wireless 802.11 connection. The "clent.c" and file contains the implementation of this TCP/IP socket 
+communication while the "client.h" provides the public interface.
+
+
+GPS Information:
+-----------------
+
+For the purpose of this project we are using dummy GPS co-ordinates as opposed to real location based GPS information.
+The "GPS.h"  provides the public interface and data structure for capturing the sound while "GPS.c" provides the function
+to get the dummy co-odrinates using a random number generator. The function also captures and sends local system date & time. 
+
+Utility Functions:
+---------------------
+
+itoa function is provided in "util.c" that is used in "impulse.c" for stringifying the GPS and time information before sending
+it to a server. 
+
+
+Building the Software: 
+--------------------------
+
+Makefile is provided for creating the binaries along with linking with dependent PortAudio library. Simple "make" command should do it.
+
+
+
+
+
+ 
+
+
+
+
+
+
+
