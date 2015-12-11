@@ -10,15 +10,11 @@
 #define FRAMES_PER_BUFFER (128)
 #define NUM_SECONDS     (1)
 #define NUM_CHANNELS    (1)
-/* Select sample format. */
-#define PA_SAMPLE_TYPE  paInt16
 typedef short SAMPLE;
-#define SAMPLE_SILENCE  (0)
-#define PRINTF_S_FORMAT "%d"
 
 typedef struct
 {
-    int          frameIndex;  /* Index into sample array. */
+    int          frameIndex;  
     int          maxFrameIndex;
     SAMPLE      *recordedSamples;
 }
@@ -39,7 +35,7 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
     int finished;
     unsigned long framesLeft = data->maxFrameIndex - data->frameIndex;
 
-    (void) outputBuffer; /* Prevent unused variable warnings. */
+    (void) outputBuffer;    
     (void) timeInfo;
     (void) statusFlags;
     (void) userData;
@@ -59,16 +55,16 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
     {
         for( i=0; i<framesToCalc; i++ )
         {
-            *wptr++ = SAMPLE_SILENCE;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = SAMPLE_SILENCE;  /* right */
+            *wptr++ = 0; 
+            if( NUM_CHANNELS == 2 ) *wptr++ = 0;
         }
     }
     else
     {
         for( i=0; i<framesToCalc; i++ )
         {
-            *wptr++ = *rptr++;  /* left */
-            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;  /* right */
+            *wptr++ = *rptr++;
+            if( NUM_CHANNELS == 2 ) *wptr++ = *rptr++;
         }
     }
     data->frameIndex += framesToCalc;
@@ -77,35 +73,35 @@ static int recordCallback( const void *inputBuffer, void *outputBuffer,
 
 static void processAndSend(){
 
-            gps_info gi;
-            char buffer[10] = {'\0'};
-            char message[100] = {'\0'};
+    gps_info gi;
+    char buffer[10] = {'\0'};
+    char message[100] = {'\0'};
 
 
-            const char* alert = "Gunshot! ";
-            const char* lat = "Latitude:";
-            const char* longitude = "Longitude:";
-            const char* date = "TimeStamp:";
-            const char* space = " ";
+    const char* alert = "Gunshot! ";
+    const char* lat = "Latitude:";
+    const char* longitude = "Longitude:";
+    const char* date = "TimeStamp:";
+    const char* space = " ";
 
-            strcat(message, alert);
+    strcat(message, alert);
 
-            GetGPSInfo(&gi);
+    GetGPSInfo(&gi);
 
-            itoa(gi.latitude, buffer, 10);
-            strcat(message, lat);        
-            strcat(message, (const char*)buffer);
-            strcat(message, space);
+    itoa(gi.latitude, buffer, 10);
+    strcat(message, lat);        
+    strcat(message, (const char*)buffer);
+    strcat(message, space);
 
-            itoa(gi.longitude, buffer, 10);
-            strcat(message, longitude);
-            strcat(message, (const char*)buffer);
-            strcat(message, space);
+    itoa(gi.longitude, buffer, 10);
+    strcat(message, longitude);
+    strcat(message, (const char*)buffer);
+    strcat(message, space);
 
-            strcat(message, date);
-            strcat(message, (const char*)asctime(gi.timeinfo));
+    strcat(message, date);
+    strcat(message, (const char*)asctime(gi.timeinfo));
 
-            Send(message);        
+    Send(message);        
 
 }
 
@@ -123,21 +119,21 @@ int main(void)
     // Set up connection to server
     if(Init() == -1)
         return -1;
-
-
+    
+    data.maxFrameIndex = totalFrames = NUM_SECONDS * SAMPLE_RATE; /* Record for a few seconds. */
+    data.frameIndex = 0;
+    numSamples = totalFrames * NUM_CHANNELS;
+    numBytes = numSamples * sizeof(SAMPLE);
+    data.recordedSamples = (SAMPLE *) malloc( numBytes ); /* From now on, recordedSamples is initialised. */
+    if( data.recordedSamples == NULL )
+    {
+        printf("Could not allocate record array.\n");
+        goto done;
+    }
     // do this forever
     for(;;){
 
-        data.maxFrameIndex = totalFrames = NUM_SECONDS * SAMPLE_RATE; /* Record for a few seconds. */
         data.frameIndex = 0;
-        numSamples = totalFrames * NUM_CHANNELS;
-        numBytes = numSamples * sizeof(SAMPLE);
-        data.recordedSamples = (SAMPLE *) malloc( numBytes ); /* From now on, recordedSamples is initialised. */
-        if( data.recordedSamples == NULL )
-        {
-            printf("Could not allocate record array.\n");
-            goto done;
-        }
 
         // Zero initialize the Recorded Samples
         for(i=0; i<numSamples; i++ ) 
@@ -157,7 +153,7 @@ int main(void)
             goto done;
         }
         inputParameters.channelCount = 1;
-        inputParameters.sampleFormat = PA_SAMPLE_TYPE;
+        inputParameters.sampleFormat = paInt16;
         inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
         inputParameters.hostApiSpecificStreamInfo = NULL;
 
@@ -206,20 +202,19 @@ int main(void)
         if(max > 20000){
             processAndSend();
         }       
-        if( data.recordedSamples )       /* Sure it is NULL or valid. */
-            free( data.recordedSamples );
     }// for-loop
 
     done:
     Pa_Terminate();
-    if( data.recordedSamples )       /* Sure it is NULL or valid. */
+    if( data.recordedSamples )       // free-up if allocated
         free( data.recordedSamples );
+
     if( err != paNoError )
     {
         fprintf( stderr, "An error occured while using the portaudio stream\n" );
         fprintf( stderr, "Error number: %d\n", err );
         fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
-        err = 1;          /* Always return 0 or 1, but no other return codes. */
+        err = 1;
     }
     return err;
 }
